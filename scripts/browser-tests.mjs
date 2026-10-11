@@ -114,7 +114,7 @@ try {
     await check("reload keeps preference", async () => {
       await page.reload();
       await state(page, "dark", "dark");
-      assert.equal(await page.locator("#selected-mode").innerText(), "dark");
+      assert.equal(await page.locator("#selected-mode").textContent(), "dark");
     });
 
     await check("keyboard + pressed state", async () => {
