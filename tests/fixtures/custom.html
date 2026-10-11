@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="color-scheme" content="light dark"><title>Custom setup</title>
+<script src="../../src/theme-init.js" data-pfx-storage-key="pfx-test-custom" data-pfx-default-mode="dark"></script>
+<script>
+window.__pfxBeforeCSS = {
+  mode: document.documentElement.getAttribute("data-pfx-theme-mode"),
+  scheme: document.documentElement.getAttribute("data-pfx-theme"),
+  native: document.documentElement.style.colorScheme
+};
+</script>
+<link rel="stylesheet" href="../../src/theme.css">
+<script type="module">
+import { createThemeController } from "../../src/index.js";
+window.__customMode = createThemeController({ storageKey: "pfx-test-custom", defaultMode: "dark" }).getState().mode;
+</script>
+</head><body><p>Custom theme test</p></body></html>

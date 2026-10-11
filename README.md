@@ -114,7 +114,9 @@ const theme = createThemeController({
 ## Run example / tests
 
 - Example: `examples/basic/index.html` (serve from a static HTTP server, not `file://`).
-- Verify: `npm run check` or `node --test` (Node 20+, no dependencies to install).
+- Verify the engine: `npm run check` or `node --test` (Node 20+, no dependencies to install).
+- Verify actual browsers: the separate GitHub Actions **Browser compatibility** workflow tests Chromium, Firefox, and WebKit. It creates screenshots and a JSON report per engine.
+- Run browser tests locally (development only): install `playwright@1.56.0` without saving it to dependencies, run `npx playwright install --with-deps chromium firefox webkit`, then run `PFX_BROWSER=firefox npm run test:browser` (or `chromium` / `webkit`).
 - Complete API: [docs/API.md](docs/API.md)
 - Instructions for applying this core to another repository: [INTEGRATION.md](INTEGRATION.md)
 
