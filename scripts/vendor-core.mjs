@@ -41,7 +41,7 @@ function validDestination(value) {
   return typeof value === "string" && value.length > 0 && value.length <= 240 &&
     !value.includes("\\") &&
     value.split("/").every(part => part && part !== "." && part !== ".." &&
-      /^[a-zA-Z0-9_.-]+$/.test(part)) && value !== LOCK_NAME;
+      /^[a-zA-Z0-9_.-]+$/.test(part));
 }
 function validateMapping(files) {
   if (!object(files) ||
@@ -53,7 +53,10 @@ function validateMapping(files) {
   for (const name of SOURCE_FILES) {
     const destination = files[name];
     if (!validDestination(destination)) fail("Unsafe destination for " + name);
-    if (used.has(destination) || destination === LOCK_NAME) fail("Duplicate or reserved destination: " + destination);
+    if (used.has(destination) || destination === LOCK_NAME || destination.startsWith(LOCK_NAME + "/") ||
+        [...used].some(other => destination.startsWith(other + "/") || other.startsWith(destination + "/"))) {
+      fail("Duplicate, nested or reserved destination: " + destination);
+    }
     used.add(destination);
   }
   return files;
