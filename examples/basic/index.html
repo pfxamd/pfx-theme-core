@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>PFx Theme Core - Basic example</title>
+
+  <!-- This must execute before stylesheets and before the page paints. -->
+  <script src="../../src/theme-init.js"></script>
+  <link rel="stylesheet" href="../../src/theme.css">
+  <link rel="stylesheet" href="./example.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="stage">
+    <header class="heading">
+      <div class="eyebrow">PFx / Theme Core</div>
+      <h1>Appearance is a preference, not a redesign.</h1>
+      <p>One core handles light, dark, and system. Your website controls its own visual identity.</p>
+    </header>
+
+    <section class="panel" aria-labelledby="selection-title">
+      <div class="panel-header">
+        <h2 id="selection-title">Theme preference</h2>
+        <span class="version">0.1.0</span>
+      </div>
+      <fieldset class="choices">
+        <legend class="sr-only">Choose a theme mode</legend>
+        <button type="button" data-theme-mode="light" aria-pressed="false">Light</button>
+        <button type="button" data-theme-mode="dark" aria-pressed="false">Dark</button>
+        <button type="button" data-theme-mode="system" aria-pressed="false">System</button>
+      </fieldset>
+      <dl class="status">
+        <div><dt>Selected</dt><dd id="selected-mode">—</dd></div>
+        <div><dt>Effective</dt><dd id="resolved-mode">—</dd></div>
+      </dl>
+      <p class="tip">Change your operating system theme while System is selected to see live updates.</p>
+      <div class="preview" aria-label="Example application surface">
+        <div class="preview-title">Example surface</div>
+        <p>This panel uses project-owned styles and shared semantic color tokens.</p>
+        <a href="https://github.com/pfxamd/pfx-theme-core">Repository</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

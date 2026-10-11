@@ -1,7 +1,10 @@
 /**
  * PFx Theme Core: synchronous first-paint bootstrap.
  * Load as a classic, non-async script in <head>, BEFORE any stylesheets.
- * Must agree with DEFAULT_STORAGE_KEY and theme attributes in theme-core.js.
+ * Optional script attributes:
+ *   data-pfx-storage-key="pfx-theme-mode"
+ *   data-pfx-default-mode="system"
+ * Match those values in createThemeController().
  */
 (function () {
   "use strict";
@@ -9,9 +12,20 @@
   var root = document.documentElement;
   if (!root) return;
 
-  var mode = "system";
+  var script = document.currentScript;
+  var configuredKey = script && script.getAttribute("data-pfx-storage-key");
+  var key = configuredKey || "pfx-theme-mode";
+  var configuredDefault = script && script.getAttribute("data-pfx-default-mode");
+  var defaultMode =
+    configuredDefault === "light" ||
+    configuredDefault === "dark" ||
+    configuredDefault === "system"
+      ? configuredDefault
+      : "system";
+
+  var mode = defaultMode;
   try {
-    var stored = window.localStorage.getItem("pfx-theme-mode");
+    var stored = window.localStorage.getItem(key);
     if (stored === "light" || stored === "dark" || stored === "system") {
       mode = stored;
     }
