@@ -37,3 +37,7 @@ If `createThemeController({ storageKey, defaultMode })` changes either default, 
 ## What to copy in a ChatGPT instruction
 
 > Apply the PFx Theme Core from https://github.com/pfxamd/pfx-theme-core to this repository. Read INTEGRATION.md and the source. Vendor the core locally rather than requiring a package or runtime connection. Respect the project's existing design and functions, implement both appearance modes and system preference, then run real checks. Report verified outcomes and any limits.
+
+## Optional semantic palettes
+
+For projects that want a single source of color truth, define an independent versioned light/dark manifest with tested foreground/background pairs as documented in `docs/COLORS.md`. At build/design time, run the CLI to check it and generate the project's semantic CSS. Keep the project palette in the consuming repository. Do not overwrite existing design colors with the sample neutral palette. Do not claim automated contrast checking alone certifies the rendered interface as WCAG compliant.

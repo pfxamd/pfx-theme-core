@@ -2,7 +2,7 @@
 
 A small, framework-independent appearance engine for websites and web applications.
 
-**Version:** 0.1.1 · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
+**Version:** 0.2.0 · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
 
 The core manages the **light / dark / system** preference. Each project keeps its own brand identity, colors, typography, components, and layouts.
 
@@ -14,7 +14,7 @@ The core manages the **light / dark / system** preference. Each project keeps it
 - Safe persistence, including when browser storage is unavailable
 - Cross-tab synchronization via storage events
 - A small observable controller with cleanup and duplicate-root protection
-- Semantic CSS tokens you can override
+- Semantic CSS tokens you can override, and optional palette contracts with WCAG 2.2 contrast checks
 - Browser-native `color-scheme` support
 - TypeScript declaration files without a mandatory TypeScript dependency
 - Node built-in tests and GitHub Actions verification
@@ -119,6 +119,17 @@ const theme = createThemeController({
 - Run browser tests locally (development only): install `playwright@1.56.0` without saving it to dependencies, run `npx playwright install --with-deps chromium firefox webkit`, then run `PFX_BROWSER=firefox npm run test:browser` (or `chromium` / `webkit`).
 - Complete API: [docs/API.md](docs/API.md)
 - Instructions for applying this core to another repository: [INTEGRATION.md](INTEGRATION.md)
+
+## Optional semantic color system (0.2.0)
+
+The preference engine has no opinion on a project's visual identity. The separate palette tooling accepts a versioned JSON palette with explicit light/dark values and intended foreground/background combinations, validates them with the WCAG 2.2 sRGB contrast formula, and generates CSS custom properties. It does not install a package or modify a consumer's CSS without an explicit build action.
+
+- Default example: `tokens/neutral.json`.
+- Validate: `node scripts/palette-cli.mjs check tokens/neutral.json`.
+- Generate: `node scripts/palette-cli.mjs build tokens/neutral.json src/theme.css`.
+- The build command refuses insufficient contrast or unsafe/unsupported values.
+- Full schema, constraints, and integration: [docs/COLORS.md](docs/COLORS.md).
+- Numeric sRGB checks do not replace in-browser checks of compositing, typography, states, gradients, or photos. No automatic WCAG compliance claim is made.
 
 ## Runtime hardening (0.1.1)
 

@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "themes": {
+    "light": {
+      "background": "#f8fafc",
+      "surface": "#ffffff",
+      "text": "#111827",
+      "muted": "#475569",
+      "border": "#64748b",
+      "accent": "#1d4ed8",
+      "on-accent": "#ffffff",
+      "focus": "#1d4ed8"
+    },
+    "dark": {
+      "background": "#0b1220",
+      "surface": "#172033",
+      "text": "#f8fafc",
+      "muted": "#cbd5e1",
+      "border": "#94a3b8",
+      "accent": "#93c5fd",
+      "on-accent": "#0b1220",
+      "focus": "#bfdbfe"
+    }
+  },
+  "contrastChecks": [
+    {
+      "foreground": "text",
+      "background": "background",
+      "usage": "text",
+      "level": "AA"
+    },
+    {
+      "foreground": "text",
+      "background": "surface",
+      "usage": "text",
+      "level": "AA"
+    },
+    {
+      "foreground": "muted",
+      "background": "background",
+      "usage": "text",
+      "level": "AA"
+    },
+    {
+      "foreground": "muted",
+      "background": "surface",
+      "usage": "text",
+      "level": "AA"
+    },
+    {
+      "foreground": "on-accent",
+      "background": "accent",
+      "usage": "text",
+      "level": "AA"
+    },
+    {
+      "foreground": "focus",
+      "background": "background",
+      "usage": "non-text",
+      "level": "AA"
+    },
+    {
+      "foreground": "focus",
+      "background": "surface",
+      "usage": "non-text",
+      "level": "AA"
+    },
+    {
+      "foreground": "border",
+      "background": "background",
+      "usage": "non-text",
+      "level": "AA"
+    },
+    {
+      "foreground": "border",
+      "background": "surface",
+      "usage": "non-text",
+      "level": "AA"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "@pfxamd/theme-core",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "description": "Framework-independent, dependency-free light/dark/system theme core",
   "type": "module",
@@ -13,11 +13,15 @@
       "default": "./src/index.js"
     },
     "./theme-init.js": "./src/theme-init.js",
-    "./theme.css": "./src/theme.css"
+    "./theme.css": "./src/theme.css",
+    "./palette.js": {
+      "types": "./src/palette.d.ts",
+      "default": "./src/palette.js"
+    }
   },
   "scripts": {
     "test": "node --test",
-    "check": "node --check src/theme-core.js && node --check src/theme-init.js && node --check src/index.js && node --test",
+    "check": "node --check src/theme-core.js && node --check src/theme-init.js && node --check src/index.js && node --check src/palette.js && node --check scripts/palette-cli.mjs && node scripts/palette-cli.mjs check tokens/neutral.json && node --test",
     "test:browser": "node scripts/browser-tests.mjs"
   },
   "license": "MIT"

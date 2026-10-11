@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 — 2026-10-11
+
+- Added optional versioned semantic light/dark palette manifests.
+- Added pure WCAG 2.2 sRGB relative luminance and contrast audit helpers.
+- Added strict input validation and deterministic CSS token generation.
+- Added a standalone, dependency-free Node CLI for palette verification and generation.
+- Added tests for contrast thresholds, invalid colors, schema, deterministic output, and CLI failure behavior.
+- Retained the existing light/dark/system runtime API and zero runtime dependencies.
+
 ## 0.1.1 — 2026-10-11
 
 - Prevented multiple active controllers from claiming the same document root; ownership is released on destroy.

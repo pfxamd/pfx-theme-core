@@ -1,0 +1,137 @@
+/**
+ * Optional, framework-independent semantic color contracts.
+ * Opaque sRGB hex colors only: #RGB and #RRGGBB.
+ * Contrast calculations follow WCAG 2.2 relative luminance.
+ */
+export const CONTRAST_MINIMUMS = Object.freeze({
+  text: Object.freeze({ AA: 4.5, AAA: 7 }),
+  "large-text": Object.freeze({ AA: 3, AAA: 4.5 }),
+  "non-text": Object.freeze({ AA: 3 }),
+});
+const HEX = /^#(?:[a-f\d]{3}|[a-f\d]{6})$/i;
+const TOKEN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+const MODES = ["light", "dark"];
+
+export function parseHexColor(value) {
+  if (typeof value !== "string" || !HEX.test(value)) {
+    throw new TypeError("Expected opaque sRGB #RGB or #RRGGBB; alpha, gradients and other CSS colors require explicit compositing");
+  }
+  const raw = value.slice(1);
+  const full = raw.length === 3 ? [...raw].map(d => d + d).join("") : raw;
+  return Object.freeze({
+    r: parseInt(full.slice(0, 2), 16),
+    g: parseInt(full.slice(2, 4), 16),
+    b: parseInt(full.slice(4, 6), 16),
+  });
+}
+
+export function relativeLuminance(color) {
+  const { r, g, b } = parseHexColor(color);
+  const linear = (channel) => {
+    const value = channel / 255;
+    return value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b);
+}
+
+export function contrastRatio(foreground, background) {
+  const a = relativeLuminance(foreground);
+  const b = relativeLuminance(background);
+  return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+}
+
+function record(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+export function validatePalette(palette) {
+  if (!record(palette) || palette.schemaVersion !== 1) {
+    throw new TypeError("Palette must be a versioned object with schemaVersion: 1");
+  }
+  if (!record(palette.themes) || Object.keys(palette.themes).sort().join(",") !== "dark,light") {
+    throw new TypeError("Palette must contain exactly light and dark themes");
+  }
+  const names = [];
+  for (const mode of MODES) {
+    const theme = palette.themes[mode];
+    if (!record(theme) || Object.keys(theme).length === 0) {
+      throw new TypeError(mode + " theme must contain at least one token");
+    }
+    const keys = Object.keys(theme).sort();
+    if (mode === "light") names.push(...keys);
+    else if (keys.join("|") !== names.join("|")) {
+      throw new TypeError("Both themes must define exactly the same semantic tokens");
+    }
+    for (const name of keys) {
+      if (!TOKEN.test(name)) throw new TypeError("Invalid semantic token: " + name);
+      try {
+        parseHexColor(theme[name]);
+      } catch (error) {
+        throw new TypeError("Invalid " + mode + "." + name + ": " + error.message);
+      }
+    }
+  }
+  if (!Array.isArray(palette.contrastChecks) || !palette.contrastChecks.length) {
+    throw new TypeError("contrastChecks must list meaningful foreground/background pairs");
+  }
+  const seen = new Set();
+  for (const [index, check] of palette.contrastChecks.entries()) {
+    if (!record(check) || !names.includes(check.foreground) || !names.includes(check.background)) {
+      throw new TypeError("Contrast check " + index + " references unknown semantic tokens");
+    }
+    if (!Object.hasOwn(CONTRAST_MINIMUMS, check.usage) ||
+      !Object.hasOwn(CONTRAST_MINIMUMS[check.usage], check.level)) {
+      throw new TypeError("Invalid usage/level in contrast check " + index);
+    }
+    const key = [check.foreground, check.background, check.usage, check.level].join("|");
+    if (seen.has(key)) throw new TypeError("Duplicate contrast check " + index);
+    seen.add(key);
+  }
+  return true;
+}
+
+export function auditPalette(palette) {
+  validatePalette(palette);
+  const results = [];
+  for (const mode of MODES) {
+    for (const check of palette.contrastChecks) {
+      const ratio = contrastRatio(
+        palette.themes[mode][check.foreground],
+        palette.themes[mode][check.background],
+      );
+      const minimum = CONTRAST_MINIMUMS[check.usage][check.level];
+      results.push(Object.freeze({
+        theme: mode,
+        foreground: check.foreground,
+        background: check.background,
+        usage: check.usage,
+        level: check.level,
+        ratio,
+        minimum,
+        passes: ratio >= minimum,
+      }));
+    }
+  }
+  return Object.freeze({
+    passes: results.every(result => result.passes),
+    results: Object.freeze(results),
+  });
+}
+
+/**
+ * Render semantic CSS without template/script injection.
+ * Include :root and explicit light/dark selectors plus a no-JS OS fallback.
+ * The caller chooses its token values; no branding is imposed by the engine.
+ */
+export function renderPaletteCSS(palette) {
+  validatePalette(palette);
+  const decl = mode => Object.keys(palette.themes[mode]).sort()
+    .map(name => `  --pfx-color-${name}: ${palette.themes[mode][name]};`).join("\n");
+  const light = decl("light");
+  const dark = decl("dark");
+  return `/* Generated by PFx Theme Core from explicit semantic tokens. */\n` +
+    `:root,\n:root[data-pfx-theme="light"] {\n  color-scheme: light;\n${light}\n}\n\n` +
+    `:root[data-pfx-theme="dark"] {\n  color-scheme: dark;\n${dark}\n}\n\n` +
+    `@media (prefers-color-scheme: dark) {\n  :root:not([data-pfx-theme]) {\n    color-scheme: dark;\n` +
+    dark.split("\n").map(line => "  " + line).join("\n") + `\n  }\n}\n`;
+}
