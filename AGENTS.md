@@ -12,3 +12,6 @@
 - Storage synchronization must ignore unrelated storage areas; re-entrant observer events must remain ordered.
 - Browser tests are in `scripts/browser-tests.mjs` and `tests/fixtures/`; they run against actual Chromium, Firefox, and WebKit engines via CI-only Playwright, without adding runtime dependencies.
 - A browser test only counts as verified if the corresponding CI job succeeds; do not infer all-browser behavior from Node unit tests.
+- Palette schema, contrast auditing and generated neutral CSS live in `src/palette.js`, `tokens/neutral.json` and `src/theme.css`. Keep generated output exact and tested against the manifest.
+- Reject unsupported translucent, wide-gamut, gradient or dynamic CSS color values rather than silently declaring them accessible.
+- Do not turn one passing set of token pairs into a site-wide WCAG compliance claim. Consumer-specific typography, imagery, overlays and states require separate verification.

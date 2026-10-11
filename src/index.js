@@ -5,3 +5,7 @@ export {
   resolveTheme,
   createThemeController,
 } from "./theme-core.js";
+export {
+  CONTRAST_MINIMUMS, parseHexColor, relativeLuminance, contrastRatio,
+  validatePalette, auditPalette, renderPaletteCSS,
+} from "./palette.js";

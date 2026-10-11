@@ -1,4 +1,4 @@
-# API — v0.1.1
+# API — v0.2.0
 
 Import from `src/index.js` (or its copied path inside a consuming project).
 
@@ -58,3 +58,15 @@ They must match the controller options.
 - `--pfx-color-focus`
 
 The app is responsible for mapping these into actual styles and ensuring appropriate contrast.
+
+## Optional semantic palette utilities (v0.2.0)
+
+Independent pure functions from `src/palette.js` (also re-exported by `src/index.js`):
+
+- `parseHexColor(hex)` accepts opaque #RGB/#RRGGBB, rejects ambiguous alpha or CSS values.
+- `relativeLuminance(hex)`, `contrastRatio(foreground, background)` implement WCAG 2.2 sRGB math without rounding decision values.
+- `validatePalette(palette)` checks a versioned, structurally matching light/dark pair and declared usage/level rules.
+- `auditPalette(palette)` returns immutable `{ passes, results }`, one numerical result per declared pair and theme.
+- `renderPaletteCSS(palette)` generates deterministic CSS custom properties and a no-script system fallback.
+
+All palette functions are optional. They do not instantiate a controller, inspect DOM, or apply a brand. See [COLORS.md](COLORS.md).
