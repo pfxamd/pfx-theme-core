@@ -41,3 +41,15 @@ If `createThemeController({ storageKey, defaultMode })` changes either default, 
 ## Optional semantic palettes
 
 For projects that want a single source of color truth, define an independent versioned light/dark manifest with tested foreground/background pairs as documented in `docs/COLORS.md`. At build/design time, run the CLI to check it and generate the project's semantic CSS. Keep the project palette in the consuming repository. Do not overwrite existing design colors with the sample neutral palette. Do not claim automated contrast checking alone certifies the rendered interface as WCAG compliant.
+
+## Vendor manager (v0.3.0)
+
+When the current task authorizes implementing the core, prefer the checked-in build-time utility `scripts/vendor-core.mjs` from this repository wherever local files are available. It installs all 8 portable source and declaration files and writes `.pfx-theme-core.lock.json` into the receiving project, capturing both version and SHA-256 file hashes.
+
+- New vanilla/static projects: `node scripts/vendor-core.mjs install /path/to/project --layout static`.
+- Frontend bundlers (such as Astro): `node scripts/vendor-core.mjs install /path/to/project --layout split` (early init in `public/`, importable sources in `src/`).
+- Special layouts: supply `--config path/to/map.json`, with an explicit manifest (see `docs/VENDORING.md`).
+- Check: `node scripts/vendor-core.mjs check /path/to/project`.
+- Update deliberately: `node scripts/vendor-core.mjs update /path/to/project` and rerun consumer tests, browser visual checks and any theme contrast checks.
+
+The manager **never edits the consuming project's components or CSS overrides**, never installs a runtime package and never automatically updates without an explicit command. The agent is responsible for integrating the copied engine with the destination's own stylesheet, UI switcher and head script. Commit the lock and vendored files together. If local changes to vendored files are detected, stop and reconcile rather than force-writing them. If only a GitHub connector is available, copy the same allowlisted source files and create a matching lock using SHA-256 calculated from their actual bytes, or report that lock-backed update functionality was not established; do not invent a successful vendor-manager run.

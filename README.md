@@ -2,7 +2,7 @@
 
 A small, framework-independent appearance engine for websites and web applications.
 
-**Version:** 0.2.0 · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
+**Version:** 0.3.0 · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
 
 The core manages the **light / dark / system** preference. Each project keeps its own brand identity, colors, typography, components, and layouts.
 
@@ -18,6 +18,25 @@ The core manages the **light / dark / system** preference. Each project keeps it
 - Browser-native `color-scheme` support
 - TypeScript declaration files without a mandatory TypeScript dependency
 - Node built-in tests and GitHub Actions verification
+
+## Vendor integration manager (v0.3.0)
+
+Projects can use the standalone `scripts/vendor-core.mjs` utility from a local checkout of this repository to copy the core and pin the exact version and SHA-256 digest of each managed file.
+
+```bash
+node scripts/vendor-core.mjs install ../my-project --layout split
+node scripts/vendor-core.mjs check ../my-project
+node scripts/vendor-core.mjs update ../my-project
+```
+
+- `install` creates a vendor lock file and refuses collisions with existing unmanaged files.
+- `check` is read-only: it detects changed or missing core files and reports newer available versions.
+- `update` preserves the project's original file destinations, rejects local core edits and downgrades, and updates only managed files. If an operation fails, already-written files are restored where possible.
+- No registry, background service, live GitHub dependency, or package publication is required.
+- This utility copies the engine: it does **not** rewrite the project's components, design system, scripts or page markup. Connecting the controller is an explicit integration step.
+- A project remains independent after vendoring; further updates are opt-in.
+
+Details and custom layouts: [docs/VENDORING.md](docs/VENDORING.md). AI integration instructions: [INTEGRATION.md](INTEGRATION.md).
 
 ## Install by copying files (no npm)
 

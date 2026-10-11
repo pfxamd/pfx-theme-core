@@ -15,3 +15,7 @@
 - Palette schema, contrast auditing and generated neutral CSS live in `src/palette.js`, `tokens/neutral.json` and `src/theme.css`. Keep generated output exact and tested against the manifest.
 - Reject unsupported translucent, wide-gamut, gradient or dynamic CSS color values rather than silently declaring them accessible.
 - Do not turn one passing set of token pairs into a site-wide WCAG compliance claim. Consumer-specific typography, imagery, overlays and states require separate verification.
+- Source files managed by `scripts/vendor-core.mjs` are explicit and allowlisted; preserve consumers' file mappings and local lock integrity.
+- Never overwrite locally edited vendored files or application-owned styles, HTML, JS or configuration to force an update.
+- The vendor tool is an opt-in CLI run from a local checkout of this repository, not an npm publishing requirement or runtime service.
+- Keep CLI behavior tested against temp consumer repositories. Do not claim a real consumer migrated without verifying that destination.

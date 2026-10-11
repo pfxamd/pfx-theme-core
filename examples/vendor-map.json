@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "files": {
+    "src/theme-init.js": "public/assets/pfx/theme-init.js",
+    "src/theme-core.js": "src/shared/pfx-theme/theme-core.js",
+    "src/index.js": "src/shared/pfx-theme/index.js",
+    "src/theme.css": "src/shared/pfx-theme/theme.css",
+    "src/palette.js": "src/shared/pfx-theme/palette.js",
+    "src/index.d.ts": "src/shared/pfx-theme/index.d.ts",
+    "src/theme-core.d.ts": "src/shared/pfx-theme/theme-core.d.ts",
+    "src/palette.d.ts": "src/shared/pfx-theme/palette.d.ts"
+  }
+}

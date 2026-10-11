@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.3.0 — 2026-10-11
+
+- Added optional dependency-free vendor manager with install/check/update commands.
+- Added a consumer-side lock containing exact upstream version, file destinations and SHA-256 digests.
+- Added collision, symlink, path traversal, version and local modification guards.
+- Added staged file updates and best-effort restoration if commit operations fail.
+- Added static, split and explicit project-specific mapping layouts.
+- Added regression tests for installs, updates, drift, collisions and malicious paths, plus integration documentation.
+- No changes to theme runtime, palette contracts, or dependency requirements.
+
 ## 0.2.0 — 2026-10-11
 
 - Added optional versioned semantic light/dark palette manifests.
