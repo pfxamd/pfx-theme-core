@@ -1,0 +1,44 @@
+/*
+ * PFx Theme Core: optional neutral token baseline.
+ * Tokens only; no layout, fonts, CSS resets or component styles are imposed.
+ * Applications should override tokens with their own design identity.
+ */
+:root,
+:root[data-pfx-theme="light"] {
+  color-scheme: light;
+  --pfx-color-background: #f8fafc;
+  --pfx-color-surface: #ffffff;
+  --pfx-color-text: #111827;
+  --pfx-color-muted: #475569;
+  --pfx-color-border: #cbd5e1;
+  --pfx-color-accent: #1d4ed8;
+  --pfx-color-on-accent: #ffffff;
+  --pfx-color-focus: #1d4ed8;
+}
+
+:root[data-pfx-theme="dark"] {
+  color-scheme: dark;
+  --pfx-color-background: #0b1220;
+  --pfx-color-surface: #172033;
+  --pfx-color-text: #f8fafc;
+  --pfx-color-muted: #cbd5e1;
+  --pfx-color-border: #475569;
+  --pfx-color-accent: #93c5fd;
+  --pfx-color-on-accent: #0b1220;
+  --pfx-color-focus: #bfdbfe;
+}
+
+/* Progressive fallback when scripting is disabled or has not run. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-pfx-theme]) {
+    color-scheme: dark;
+    --pfx-color-background: #0b1220;
+    --pfx-color-surface: #172033;
+    --pfx-color-text: #f8fafc;
+    --pfx-color-muted: #cbd5e1;
+    --pfx-color-border: #475569;
+    --pfx-color-accent: #93c5fd;
+    --pfx-color-on-accent: #0b1220;
+    --pfx-color-focus: #bfdbfe;
+  }
+}

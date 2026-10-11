@@ -1,0 +1,23 @@
+{
+  "name": "@pfxamd/theme-core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Framework-independent, dependency-free light/dark/system theme core",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./theme-init.js": "./src/theme-init.js",
+    "./theme.css": "./src/theme.css"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/theme-core.js && node --check src/theme-init.js && node --check src/index.js && node --test"
+  },
+  "license": "MIT"
+}
