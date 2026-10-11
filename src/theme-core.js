@@ -1,5 +1,5 @@
 /**
- * PFx Theme Core v0.1.0
+ * PFx Theme Core v0.1.1
  * Framework-independent theme preference and resolved color scheme.
  * No dependencies, globals, rendering logic, or network requests.
  */
@@ -7,6 +7,7 @@ export const THEME_MODES = Object.freeze(["light", "dark", "system"]);
 export const DEFAULT_STORAGE_KEY = "pfx-theme-mode";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
+const activeRoots = new WeakMap();
 
 /** @param {unknown} value */
 export function isThemeMode(value) {
@@ -51,6 +52,41 @@ function getMediaQuery(win) {
 }
 
 /**
+ * Attach modern or legacy media listeners. Browsers/shims may expose a
+ * method that nevertheless throws; never make appearance switching depend
+ * on an optional event subscription.
+ */
+function listenForSystemChanges(media, listener) {
+  if (typeof media?.addEventListener === "function") {
+    try {
+      media.addEventListener("change", listener);
+      return () => media.removeEventListener?.("change", listener);
+    } catch {
+      // Fall through to older APIs where available.
+    }
+  }
+  if (typeof media?.addListener === "function") {
+    try {
+      media.addListener(listener);
+      return () => media.removeListener?.(listener);
+    } catch {
+      // The initial preference can still be applied without live updates.
+    }
+  }
+  return () => {};
+}
+
+function listenForStorageChanges(win, listener) {
+  try {
+    if (typeof win?.addEventListener !== "function") return () => {};
+    win.addEventListener("storage", listener);
+    return () => win.removeEventListener?.("storage", listener);
+  } catch {
+    return () => {};
+  }
+}
+
+/**
  * Create one controller for one document root. Call destroy() when unmounting.
  *
  * @param {{
@@ -75,13 +111,18 @@ export function createThemeController(options = {}) {
   if (!isThemeMode(defaultMode)) {
     throw new TypeError("defaultMode must be light, dark, or system");
   }
+  if (activeRoots.has(root)) {
+    throw new Error("A theme controller is already active for this root; destroy it before creating another");
+  }
 
   const media = getMediaQuery(win);
   const saved = readStorage(win, storageKey);
   let mode = isThemeMode(saved) ? saved : defaultMode;
   let resolved = resolveTheme(mode, media?.matches === true);
   let destroyed = false;
+  let notifying = false;
   const subscribers = new Set();
+  const notifications = [];
 
   const getState = () => ({ mode, resolved });
 
@@ -91,14 +132,41 @@ export function createThemeController(options = {}) {
     if (root.style) root.style.colorScheme = resolved;
   }
 
+  function flushNotifications() {
+    if (notifying || destroyed) return;
+    notifying = true;
+    const errors = [];
+    try {
+      // Serialize re-entrant changes. Every subscriber sees the same sequence
+      // of snapshots, even when another subscriber immediately calls setMode().
+      while (notifications.length && !destroyed) {
+        const snapshot = notifications.shift();
+        for (const listener of Array.from(subscribers)) {
+          if (destroyed) break;
+          try {
+            listener(snapshot);
+          } catch (error) {
+            // One faulty observer must not prevent other observers running.
+            errors.push(error);
+          }
+        }
+      }
+    } finally {
+      notifying = false;
+      if (destroyed) notifications.length = 0;
+    }
+    if (errors.length === 1) throw errors[0];
+    if (errors.length > 1) {
+      throw new AggregateError(errors, "Multiple theme subscribers failed");
+    }
+  }
+
   function update(previousMode, previousResolved) {
     resolved = resolveTheme(mode, media?.matches === true);
     paint();
     if (previousMode !== mode || previousResolved !== resolved) {
-      const snapshot = getState();
-      for (const listener of Array.from(subscribers)) {
-        listener(snapshot);
-      }
+      notifications.push(Object.freeze(getState()));
+      flushNotifications();
     }
   }
 
@@ -125,7 +193,18 @@ export function createThemeController(options = {}) {
   }
 
   function onStorageChange(event) {
-    if (destroyed || (event.key !== storageKey && event.key !== null)) return;
+    if (destroyed || !event || (event.key !== storageKey && event.key !== null)) return;
+
+    // "storage" also fires for sessionStorage changes in same-origin
+    // iframes. Never confuse those with the persisted localStorage choice.
+    if (event.storageArea != null) {
+      try {
+        if (event.storageArea !== win?.localStorage) return;
+      } catch {
+        return;
+      }
+    }
+
     const previousMode = mode;
     const previousResolved = resolved;
     const value = event.key === null ? readStorage(win, storageKey) : event.newValue;
@@ -133,16 +212,13 @@ export function createThemeController(options = {}) {
     update(previousMode, previousResolved);
   }
 
-  if (typeof media?.addEventListener === "function") {
-    media.addEventListener("change", onMediaChange);
-  } else if (typeof media?.addListener === "function") {
-    media.addListener(onMediaChange);
-  }
-  win?.addEventListener?.("storage", onStorageChange);
-
+  // First paint precedes listener registration. If a custom root rejects a
+  // write, constructor failure cannot leave any browser subscriptions behind.
   paint();
+  const detachMedia = listenForSystemChanges(media, onMediaChange);
+  const detachStorage = listenForStorageChanges(win, onStorageChange);
 
-  return Object.freeze({
+  const controller = Object.freeze({
     getState,
     setMode,
     reset() {
@@ -159,13 +235,23 @@ export function createThemeController(options = {}) {
     destroy() {
       if (destroyed) return;
       destroyed = true;
-      if (typeof media?.removeEventListener === "function") {
-        media.removeEventListener("change", onMediaChange);
-      } else if (typeof media?.removeListener === "function") {
-        media.removeListener(onMediaChange);
-      }
-      win?.removeEventListener?.("storage", onStorageChange);
+      notifications.length = 0;
       subscribers.clear();
+      // Both cleanups are attempted, even when a browser shim throws.
+      try {
+        detachMedia();
+      } catch {
+        // Best effort: still detach storage listener and release ownership.
+      }
+      try {
+        detachStorage();
+      } catch {
+        // Best effort: ownership is always released.
+      }
+      activeRoots.delete(root);
     },
   });
+
+  activeRoots.set(root, controller);
+  return controller;
 }
