@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark"><title>First paint check</title>
+<script src="../../src/theme-init.js"></script>
+<script>
+window.__pfxBeforeCSS = {
+  mode: document.documentElement.getAttribute("data-pfx-theme-mode"),
+  scheme: document.documentElement.getAttribute("data-pfx-theme"),
+  native: document.documentElement.style.colorScheme
+};
+</script>
+<link rel="stylesheet" href="../../src/theme.css">
+<style>:root { background: var(--pfx-color-background); color: var(--pfx-color-text); }</style>
+</head><body><p>First paint test</p></body></html>
