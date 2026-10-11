@@ -1,4 +1,4 @@
-# API — v0.1.0
+# API — v0.1.1
 
 Import from `src/index.js` (or its copied path inside a consuming project).
 
@@ -15,13 +15,15 @@ Options:
 | `storageKey` | `string` | `"pfx-theme-mode"` | Preference persistence key |
 | `defaultMode` | `ThemeMode` | `"system"` | Fallback when no valid stored value |
 
+One active controller owns each root. Creating another controller for the same root before calling `destroy()` throws. This is intentional: competing controllers would write conflicting attributes. Separate roots remain independent.
+
 Controller methods:
 
 - `getState()` returns `{ mode, resolved }`.
 - `setMode("light" | "dark" | "system")` updates the preference, paints root, persists best-effort, and returns state.
 - `reset()` selects and persists `system`.
-- `subscribe(listener)` receives state when a preference or effective scheme changes; returns an unsubscribe function. Invoke `getState()` to render the initial state.
-- `destroy()` removes media query and storage listeners; calling it twice is safe. Calling `setMode()` after it throws.
+- `subscribe(listener)` receives an immutable state snapshot when a preference or effective scheme changes; returns an unsubscribe function. Invoke `getState()` to render the initial state. Re-entrant changes are delivered in FIFO order. A throwing subscriber does not stop remaining callbacks; errors propagate after the queue is drained, as the original error or `AggregateError` when there is more than one.
+- `destroy()` removes media query and storage listeners on a best-effort basis and releases root ownership; calling it twice is safe. Calling `setMode()` after it throws.
 
 Additional exports:
 

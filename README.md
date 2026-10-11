@@ -2,7 +2,7 @@
 
 A small, framework-independent appearance engine for websites and web applications.
 
-**Version:** 0.1.0 · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
+**Version:** 0.1.1 · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
 
 The core manages the **light / dark / system** preference. Each project keeps its own brand identity, colors, typography, components, and layouts.
 
@@ -13,7 +13,7 @@ The core manages the **light / dark / system** preference. Each project keeps it
 - Best-effort first-paint setup using a synchronous head script
 - Safe persistence, including when browser storage is unavailable
 - Cross-tab synchronization via storage events
-- A small observable controller with cleanup
+- A small observable controller with cleanup and duplicate-root protection
 - Semantic CSS tokens you can override
 - Browser-native `color-scheme` support
 - TypeScript declaration files without a mandatory TypeScript dependency
@@ -59,7 +59,7 @@ const unsubscribe = theme.subscribe(({ mode, resolved }) => {
 // theme.destroy();
 ```
 
-Do not call `setMode` automatically on every page load; the controller restores a saved preference on its own.
+Do not call `setMode` automatically on every page load; the controller restores a saved preference on its own. **Only create one active controller per document root.** A second creation for the same root throws until the first controller is destroyed.
 
 The current effective scheme is reflected on the HTML element:
 
@@ -117,6 +117,14 @@ const theme = createThemeController({
 - Verify: `npm run check` or `node --test` (Node 20+, no dependencies to install).
 - Complete API: [docs/API.md](docs/API.md)
 - Instructions for applying this core to another repository: [INTEGRATION.md](INTEGRATION.md)
+
+## Runtime hardening (0.1.1)
+
+- Ignores unrelated storage areas; cross-tab preference events must correspond to localStorage.
+- Guarantees subscription event order for synchronous, re-entrant theme updates. Subscription callbacks receive read-only state snapshots.
+- If a subscriber throws, other subscribers still run; the original error (or an `AggregateError` for multiple failures) is rethrown after dispatch. Avoid throwing from UI subscribers.
+- Handles missing/throwing optional media and storage event registration APIs. Destroy cleans up best-effort.
+- The API and copied-file installation remain compatible with 0.1.0. Consumers need to replace only `theme-core.js` for this maintenance update.
 
 ## Scope and limitations
 
