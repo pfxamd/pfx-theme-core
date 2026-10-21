@@ -7,3 +7,7 @@
 After successful checks, one existing CI job commits only generated version files on current main. It never force-pushes, never overwrites a newer source update, and uses `[skip ci]` to avoid recursive builds. Its exact bot message is excluded from version counting. Pull requests never write to main.
 
 Pinned consumers keep their pinned core revision and version until explicitly updated. Do not report the latest upstream release as the version embedded in a consumer.
+
+## Shared PFx Release Core consumer
+
+The local `.pfx/release.mjs` is now a compatibility adapter to the pinned `@pfxamd/release-core` archive declared in `package.json`. It preserves existing `--sync` and `--publish` entry points and source commit counting. This repository opts into `allowGeneratedSourcePaths` because its original source paths include `package.json`; exact metadata bot commits remain ignored. Update the pinned archive deliberately after validating the new engine against this repository's history and CI. No npm registry publication is required.

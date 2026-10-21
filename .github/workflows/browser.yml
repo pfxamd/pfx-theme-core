@@ -38,6 +38,8 @@ jobs:
         with:
           node-version: "24"
           package-manager-cache: false
+      - name: Install pinned shared release engine
+        run: npm install --ignore-scripts --no-audit --no-fund --package-lock=false
       - name: Resolve deterministic core version
         run: node .pfx/release.mjs --sync
       - name: Install test runner (CI-only)

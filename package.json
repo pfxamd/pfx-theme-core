@@ -25,5 +25,8 @@
     "test:browser": "node scripts/browser-tests.mjs",
     "release:version": "node .pfx/release.mjs --sync"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@pfxamd/release-core": "https://github.com/pfxamd/pfx-release-core/releases/download/v0.1.0-alpha.1/pfxamd-release-core-0.1.0-alpha.1.tgz"
+  }
 }
