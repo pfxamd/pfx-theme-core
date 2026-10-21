@@ -3,8 +3,8 @@
   "kind": "core",
   "product": "PFx Theme Core",
   "channel": "Alpha",
-  "version": "0.3.0",
-  "label": "Alpha 0.3.0",
-  "commit": "a1b2ff145831096aaf66afa51e377c60a65dd5ce",
-  "sourceDate": "2026-10-11T21:14:18+01:00"
+  "version": "0.3.1",
+  "label": "Alpha 0.3.1",
+  "commit": "8025df38fa30f285fd920c0201aaa01cf0c807a5",
+  "sourceDate": "2026-10-21T14:52:41+01:00"
 }
