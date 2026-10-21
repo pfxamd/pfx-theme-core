@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "kind": "core",
+  "product": "PFx Theme Core",
+  "channel": "Alpha",
+  "version": "0.3.0",
+  "label": "Alpha 0.3.0",
+  "commit": "a1b2ff145831096aaf66afa51e377c60a65dd5ce",
+  "sourceDate": "2026-10-11T21:14:18+01:00"
+}

@@ -10,12 +10,22 @@ permissions:
 
 jobs:
   test:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v7
         with:
           node-version: '24'
           package-manager-cache: false
+      - name: Resolve deterministic core version
+        run: node .pfx/release.mjs --sync
       - name: Validate syntax and run tests
         run: npm run check
+      - name: Record current core version and badge
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: node .pfx/release.mjs --publish
+

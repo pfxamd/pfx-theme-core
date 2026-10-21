@@ -1,8 +1,10 @@
 # PFx Theme Core
 
+[![Core version](./version-badge.svg)](./version.json)
+
 A small, framework-independent appearance engine for websites and web applications.
 
-**Version:** 0.3.0 · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
+**Version:** see the badge above · **License:** MIT · **Dependencies:** 0 · **Publishing to npm:** not required
 
 The core manages the **light / dark / system** preference. Each project keeps its own brand identity, colors, typography, components, and layouts.
 
@@ -166,3 +168,7 @@ The preference engine has no opinion on a project's visual identity. The separat
 - Browser-based visual and accessibility checks must be performed within the actual consuming project.
 
 © 2026 PFxamd
+
+## Automatic source versions
+
+The badge, `version.json`, and package manifests share one Git-derived version. Run `node .pfx/release.mjs --sync` before a local build. Full Git history is required. Rebuilding the same source keeps the same number; metadata-only bot commits do not advance it. See [.pfx/RELEASE.md](.pfx/RELEASE.md).

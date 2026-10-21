@@ -22,7 +22,8 @@
   "scripts": {
     "test": "node --test",
     "check": "node --check src/theme-core.js && node --check src/theme-init.js && node --check src/index.js && node --check src/palette.js && node --check scripts/palette-cli.mjs && node --check scripts/vendor-core.mjs && node scripts/palette-cli.mjs check tokens/neutral.json && node --test",
-    "test:browser": "node scripts/browser-tests.mjs"
+    "test:browser": "node scripts/browser-tests.mjs",
+    "release:version": "node .pfx/release.mjs --sync"
   },
   "license": "MIT"
 }
